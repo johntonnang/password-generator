@@ -1,0 +1,278 @@
+---
+import Checkbox from './Checkbox.astro';
+import GenerateButton from './GenerateButton.tsx';
+
+const {
+  characterLengthLabel,
+  includeUppercaseLabel,
+  includeLowercaseLabel,
+  includeNumbersLabel,
+  includeSymbolsLabel,
+  strengthLabel,
+  generateButtonLabel,
+} = Astro.props;
+const characterLength = 10;
+---
+
+<div class="container">
+  <div class="character-container">
+    <div class="character-wrapper">
+      <p class="body-text">{characterLengthLabel}</p>
+      <span id="character-length" class="heading-large">{characterLength}</span>
+    </div>
+    <div class="slider-container">
+      <input id="length-slider" type="range" min="0" max="20" value="10" />
+    </div>
+  </div>
+  <div class="checkbox-container">
+    <Checkbox
+      id="includeUppercase"
+      label={includeUppercaseLabel}
+      checked={true}
+    />
+    <Checkbox id="includeLowercase" label={includeLowercaseLabel} />
+    <Checkbox id="includeNumbers" label={includeNumbersLabel} />
+    <Checkbox id="includeSymbols" label={includeSymbolsLabel} />
+  </div>
+  <div class="bottom-wrapper">
+    <div class="strength-container">
+      <p class="body-text grey">{strengthLabel}</p>
+      <div class="strength-wrapper">
+        <p id="strength-text" class="heading-medium"></p>
+        <div class="strength-inner-wrapper">
+          <span class="rectangle"></span>
+          <span class="rectangle"></span>
+          <span class="rectangle"></span>
+          <span class="rectangle"></span>
+        </div>
+      </div>
+    </div>
+    <GenerateButton client:load generateButtonLabel={generateButtonLabel} />
+  </div>
+</div>
+
+<script type="module">
+  document
+    .getElementById('length-slider')
+    ?.addEventListener('input', function () {
+      const sliderValue = this.value;
+      document.getElementById('character-length').textContent = sliderValue;
+    });
+
+  const checkboxes = document.querySelectorAll(
+    '.checkbox-wrapper input[type="checkbox"]'
+  );
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      const checkedCount = Array.from(checkboxes).filter(
+        (cb) => cb.checked
+      ).length;
+      if (checkedCount === 0) {
+        checkbox.checked = true;
+      }
+    });
+  });
+
+  const lengthSlider = document.getElementById('length-slider');
+
+  lengthSlider.addEventListener('input', function () {
+    const value =
+      (lengthSlider.value - lengthSlider.min) /
+      (lengthSlider.max - lengthSlider.min);
+    lengthSlider.style.setProperty('--value', value);
+    document.getElementById('character-length').textContent =
+      lengthSlider.value;
+
+    updateSliderTrackBackground(value);
+  });
+
+  function updateSliderTrackBackground(value) {
+    const slider = document.getElementById('length-slider');
+    const percentage = value * 100;
+
+    slider.style.background = `linear-gradient(
+      to right,
+      var(--color-neon-green) 0%,
+      var(--color-neon-green) ${percentage}%,
+      var(--color-very-dark-grey) ${percentage}%,
+      var(--color-very-dark-grey) 100%
+    )`;
+  }
+
+  lengthSlider.dispatchEvent(new Event('input'));
+</script>
+
+<style>
+  .container {
+    background-color: var(--color-dark-grey);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 32px 32px;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .character-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .character-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .slider-container {
+    height: 28px;
+  }
+
+  .checkbox-container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: 20px;
+  }
+
+  .strength-container {
+    background-color: var(--color-very-dark-grey);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 21px 32px 19px;
+    width: 100%;
+    height: 72px;
+  }
+
+  .grey {
+    color: var(--color-grey);
+  }
+
+  .strength-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .strength-inner-wrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .rectangle {
+    border: 2px solid var(--color-almost-white);
+    width: 10px;
+    height: 28px;
+  }
+
+  label,
+  p {
+    color: var(--color-almost-white);
+  }
+
+  span {
+    color: var(--color-neon-green);
+  }
+
+  input[type='range'] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: var(--color-very-dark-grey);
+    outline: none;
+    position: relative;
+  }
+
+  input[type='range']::-webkit-slider-runnable-track {
+    background: linear-gradient(
+      to right,
+      var(--color-neon-green) 0%,
+      var(--color-neon-green) calc((100% / var(--max)) * var(--value)),
+      var(--color-very-dark-grey) calc((100% / var(--max)) * var(--value)),
+      var(--color-very-dark-grey) 100%
+    );
+    height: 12px;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 28px;
+    height: 28px;
+    background: var(--color-almost-white);
+    border: 2px solid var(--color-almost-white);
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+    margin-top: -8px;
+    transition: all 0.3s ease-in-out;
+  }
+
+  input[type='range']::-webkit-slider-thumb:hover {
+    background: var(--color-very-dark-grey);
+    border: 2px solid var(--color-neon-green);
+    cursor: pointer;
+  }
+
+  input[type='range']::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+    background: var(--color-very-dark-grey);
+    border: 2px solid var(--color-almost-white);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  input[type='range']::-moz-range-thumb:hover {
+    background: var(--color-very-dark-grey);
+    border: 2px solid var(--color-neon-green);
+    cursor: pointer;
+  }
+
+  input[type='range']::-moz-range-track {
+    background: linear-gradient(
+      to right,
+      var(--color-neon-green) 0%,
+      var(--color-neon-green) calc((100% / var(--max)) * var(--value)),
+      var(--color-very-dark-grey) calc((100% / var(--max)) * var(--value)),
+      var(--color-very-dark-grey) 100%
+    );
+    height: 8px;
+  }
+
+  .bottom-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 16px;
+    }
+
+    .character-container {
+      gap: 8px;
+    }
+
+    .checkbox-container {
+      gap: 16px;
+    }
+
+    .bottom-wrapper {
+      gap: 16px;
+    }
+
+    .strength-container {
+      padding: 14px 16px;
+      height: 56px;
+    }
+
+    .checkbox-wrapper {
+      height: 21px;
+    }
+  }
+</style>
