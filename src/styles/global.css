@@ -63,6 +63,7 @@ body {
 }
 
 #generate-button {
+  color: var(--color-dark-grey);
   background-color: var(--color-neon-green);
   border: 2px solid var(--color-neon-green);
   font-family: var(--font-family);
