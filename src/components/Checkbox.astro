@@ -1,0 +1,60 @@
+---
+import { Icon } from 'astro-icon/components';
+const { label, id, checked } = Astro.props;
+---
+
+<div class="checkbox-wrapper">
+  <input name={id} type="checkbox" id={id} checked={checked} />
+  <label for={id}
+    >{label}
+    <Icon name="icon-check" />
+  </label>
+</div>
+
+<style>
+  .checkbox-wrapper {
+    display: flex;
+    gap: 24px;
+    height: 23px;
+  }
+
+  input[type='checkbox'] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-neon-green);
+    background-color: transparent;
+    cursor: pointer;
+    outline: none;
+  }
+
+  input[type='checkbox']:checked {
+    background-color: var(--color-neon-green);
+  }
+
+  label {
+    color: var(--color-almost-white);
+    position: relative;
+  }
+
+  [data-icon] {
+    top: 0;
+    left: -41px;
+    position: absolute;
+    margin-top: 3px;
+    display: none;
+    pointer-events: none;
+    width: 14px;
+  }
+
+  .checkbox-wrapper input[type='checkbox']:checked + label [data-icon] {
+    display: block;
+  }
+
+  @media (max-width: 480px) {
+    .checkbox-wrapper {
+      height: 21px;
+    }
+  }
+</style>
