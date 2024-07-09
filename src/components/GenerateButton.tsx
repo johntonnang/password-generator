@@ -67,7 +67,7 @@ const GenerateButton: React.FC<GenerateButtonProps> = ({
     let border = 'none';
     let filledRects = 1;
 
-    if (length >= 5 && length <= 15 && checkedCount > 1) {
+    if (length >= 5 && checkedCount > 1) {
       strength = 'WEAK';
       color = 'var(--color-orange)';
       border = 'none';
